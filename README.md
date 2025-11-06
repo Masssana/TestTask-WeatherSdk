@@ -68,6 +68,6 @@ WeatherClient.deleteInstance(apiKey);
 
 ## Инструменты
 
-- Java 21
+- Java 11+
 - Maven, Jackson for JSON
 
