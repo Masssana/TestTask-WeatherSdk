@@ -1,0 +1,131 @@
+openapi: 3.0.3
+info:
+  title: Weather SDK Facade API
+  version: 1.0.0
+  description: |
+    Hypothetical HTTP facade for the Java Weather SDK. This documents the unified
+    response shape produced by the SDK when fetching current weather for a city.
+servers:
+  - url: https://api.example.com
+    description: Example server
+paths:
+  /weather:
+    get:
+      summary: Get current weather for a city
+      description: Returns the SDK-normalized weather JSON for the first matching city.
+      parameters:
+        - in: query
+          name: city
+          required: true
+          schema:
+            type: string
+          description: City name to search (first match is used)
+      responses:
+        '200':
+          description: Current weather
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/WeatherResponse'
+              examples:
+                example:
+                  value:
+                    weather:
+                      main: Clouds
+                      description: scattered clouds
+                    temperature:
+                      temp: 269.6
+                      feels_like: 267.57
+                    visibility: 10000
+                    wind:
+                      speed: 1.38
+                    datetime: 1675744800
+                    sys:
+                      sunrise: 1675751262
+                      sunset: 1675787560
+                    timezone: 3600
+                    name: Zocca
+        '400':
+          description: Bad request (e.g., missing or blank city)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: City not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Server error (e.g., upstream failure)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+components:
+  schemas:
+    WeatherResponse:
+      type: object
+      properties:
+        weather:
+          type: object
+          properties:
+            main:
+              type: string
+              nullable: true
+            description:
+              type: string
+              nullable: true
+        temperature:
+          type: object
+          properties:
+            temp:
+              type: number
+              format: float
+              nullable: true
+            feels_like:
+              type: number
+              format: float
+              nullable: true
+        visibility:
+          type: integer
+          format: int32
+          nullable: true
+        wind:
+          type: object
+          properties:
+            speed:
+              type: number
+              format: float
+              nullable: true
+        datetime:
+          type: integer
+          format: int64
+          description: Unix time (seconds)
+          nullable: true
+        sys:
+          type: object
+          properties:
+            sunrise:
+              type: integer
+              format: int64
+              nullable: true
+            sunset:
+              type: integer
+              format: int64
+              nullable: true
+        timezone:
+          type: integer
+          format: int32
+          nullable: true
+        name:
+          type: string
+          nullable: true
+    Error:
+      type: object
+      properties:
+        message:
+          type: string
+      required: [message]
+
